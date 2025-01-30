@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<efx:project name="rah" description="" last_change="1716795198" sw_version="2023.2.307" last_run_state="pass" last_run_flow="bitstream" config_result_in_sync="true" design_ood="change" place_ood="change" route_ood="sync" xmlns:efx="http://www.efinixinc.com/enf_proj" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.efinixinc.com/enf_proj enf_proj.xsd">
+<efx:project name="rah" description="" last_change="1738220322" sw_version="2024.2.294" last_run_state="fail" last_run_flow="syn" config_result_in_sync="true" design_ood="change" place_ood="change" route_ood="sync" xmlns:efx="http://www.efinixinc.com/enf_proj" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.efinixinc.com/enf_proj enf_proj.xsd">
     <efx:device_info>
         <efx:family name="Trion"/>
         <efx:device name="T120F324"/>
         <efx:timing_model name="C3"/>
     </efx:device_info>
-    <efx:design_info def_veri_version="verilog_2k" def_vhdl_version="vhdl_2008">
+    <efx:design_info def_veri_version="verilog_2k" def_vhdl_version="vhdl_2008" unified_flow="false">
         <efx:top_module name="top"/>
         <efx:design_file name="rtl/rah_encoder.v" version="default" library="default"/>
         <efx:design_file name="rtl/video_gen.v" version="default" library="default"/>
@@ -16,12 +16,26 @@
         <efx:design_file name="rtl/uart.v" version="default" library="default"/>
         <efx:design_file name="rtl/rrq.v" version="default" library="default"/>
         <efx:design_file name="rtl/data_aligner.v" version="default" library="default"/>
+        <efx:design_file name="sha_engine/rtl/Ch.v" version="default" library="default"/>
+        <efx:design_file name="sha_engine/rtl/W_machine.v" version="default" library="default"/>
+        <efx:design_file name="sha_engine/rtl/sha256_s1.v" version="default" library="default"/>
+        <efx:design_file name="sha_engine/rtl/sha256_S4.v" version="default" library="default"/>
+        <efx:design_file name="sha_engine/rtl/Maj.v" version="default" library="default"/>
+        <efx:design_file name="sha_engine/rtl/sha256_round.v" version="default" library="default"/>
+        <efx:design_file name="sha_engine/rtl/sha256_s0.v" version="default" library="default"/>
+        <efx:design_file name="sha_engine/rtl/sha256_S3.v" version="default" library="default"/>
+        <efx:design_file name="sha_engine/rtl/sha2_round.v" version="default" library="default"/>
+        <efx:design_file name="sha_engine/rtl/miner.v" version="default" library="default"/>
+        <efx:design_file name="sha_engine/rtl/sha256_block.v" version="default" library="default"/>
+        <efx:design_file name="sha_engine/rtl/sha256_K_machine.v" version="default" library="default"/>
+        <efx:design_file name="rah_sha_bridge.v" version="default" library="default"/>
         <efx:top_vhdl_arch name=""/>
     </efx:design_info>
     <efx:constraint_info>
         <efx:sdc_file name="rtl/constraints.sdc"/>
         <efx:inter_file name=""/>
     </efx:constraint_info>
+    <efx:isf_info/>
     <efx:sim_info/>
     <efx:misc_info/>
     <efx:ip_info>
@@ -59,6 +73,12 @@
         <efx:param name="mult_input_regs_packing" value="1" value_type="e_option"/>
         <efx:param name="mult_output_regs_packing" value="1" value_type="e_option"/>
         <efx:param name="include" value="ip/async_fifo" value_type="e_string"/>
+        <efx:param name="bram-push-tco-outreg" value="0" value_type="e_option"/>
+        <efx:param name="hdl-loop-limit" value="20000" value_type="e_integer"/>
+        <efx:param name="peri-syn-instantiation" value="0" value_type="e_option"/>
+        <efx:param name="peri-syn-inference" value="0" value_type="e_option"/>
+        <efx:param name="ram-decomp-mode" value="0" value_type="e_option"/>
+        <efx:param name="max_threads" value="-1" value_type="e_integer"/>
     </efx:synthesis>
     <efx:place_and_route tool_name="efx_pnr">
         <efx:param name="work_dir" value="work_pnr" value_type="e_string"/>
@@ -69,6 +89,7 @@
         <efx:param name="placer_effort_level" value="2" value_type="e_option"/>
         <efx:param name="max_threads" value="-1" value_type="e_integer"/>
         <efx:param name="print_critical_path" value="10" value_type="e_integer"/>
+        <efx:param name="classic_flow" value="off" value_type="e_noarg"/>
     </efx:place_and_route>
     <efx:bitstream_generation tool_name="efx_pgm">
         <efx:param name="mode" value="active" value_type="e_string"/>
@@ -91,7 +112,7 @@
     </efx:bitstream_generation>
     <efx:debugger>
         <efx:param name="work_dir" value="work_dbg" value_type="e_string"/>
-        <efx:param name="auto_instantiation" value="off" value_type="e_bool"/>
+        <efx:param name="auto_instantiation" value="on" value_type="e_bool"/>
         <efx:param name="profile" value="debug_profile.wizard.json" value_type="e_string"/>
     </efx:debugger>
 </efx:project>

@@ -1,3 +1,41 @@
+------------- Begin Cut here for COMPONENT Declaration ------
+component edb_top
+  port (
+         bscan_CAPTURE : in  std_logic;
+         bscan_DRCK    : in  std_logic;
+         bscan_RESET   : in  std_logic;
+         bscan_RUNTEST : in  std_logic;
+         bscan_SEL     : in  std_logic;
+         bscan_SHIFT   : in  std_logic;
+         bscan_TCK     : in  std_logic;
+         bscan_TDI     : in  std_logic;
+         bscan_TMS     : in  std_logic;
+         bscan_UPDATE  : in  std_logic;
+         bscan_TDO     : out std_logic
+       );
+end component ;
+---------------------- End COMPONENT Declaration ------------
+
+-- The following code must appear in the VHDL architecture
+-- body. Substitute your own instance name and net names.
+
+------------- Begin Cut here for INSTANTIATION Template -----
+edb_top_inst : edb_top
+port map (
+           bscan_CAPTURE => jtag_inst1_CAPTURE,
+           bscan_DRCK    => jtag_inst1_DRCK,
+           bscan_RESET   => jtag_inst1_RESET,
+           bscan_RUNTEST => jtag_inst1_RUNTEST,
+           bscan_SEL     => jtag_inst1_SEL,
+           bscan_SHIFT   => jtag_inst1_SHIFT,
+           bscan_TCK     => jtag_inst1_TCK,
+           bscan_TDI     => jtag_inst1_TDI,
+           bscan_TMS     => jtag_inst1_TMS,
+           bscan_UPDATE  => jtag_inst1_UPDATE,
+           bscan_TDO     => jtag_inst1_TDO
+         );
+------------------------ End INSTANTIATION Template ---------
+
 --------------------------------------------------------------------------------
 -- Copyright (C) 2013-2024 Efinix Inc. All rights reserved.              
 --
@@ -36,54 +74,3 @@
 --     APPLY TO LICENSEE.                                                
 --
 --------------------------------------------------------------------------------
-------------- Begin Cut here for COMPONENT Declaration ------
-component async_fifo is
-port (
-    almost_full_o : out std_logic;
-    prog_full_o : out std_logic;
-    full_o : out std_logic;
-    wr_ack_o : out std_logic;
-    empty_o : out std_logic;
-    almost_empty_o : out std_logic;
-    rd_valid_o : out std_logic;
-    wr_clk_i : in std_logic;
-    rd_clk_i : in std_logic;
-    wr_en_i : in std_logic;
-    rd_en_i : in std_logic;
-    wdata : in std_logic_vector(47 downto 0);
-    rst_busy : out std_logic;
-    rdata : out std_logic_vector(47 downto 0);
-    a_rst_i : in std_logic;
-    wr_datacount_o : out std_logic_vector(9 downto 0);
-    rd_datacount_o : out std_logic_vector(9 downto 0);
-    underflow_o : out std_logic;
-    overflow_o : out std_logic
-);
-end component async_fifo;
-
----------------------- End COMPONENT Declaration ------------
-------------- Begin Cut here for INSTANTIATION Template -----
-u_async_fifo : async_fifo
-port map (
-    almost_full_o => almost_full_o,
-    prog_full_o => prog_full_o,
-    full_o => full_o,
-    wr_ack_o => wr_ack_o,
-    empty_o => empty_o,
-    almost_empty_o => almost_empty_o,
-    rd_valid_o => rd_valid_o,
-    wr_clk_i => wr_clk_i,
-    rd_clk_i => rd_clk_i,
-    wr_en_i => wr_en_i,
-    rd_en_i => rd_en_i,
-    wdata => wdata,
-    rst_busy => rst_busy,
-    rdata => rdata,
-    a_rst_i => a_rst_i,
-    wr_datacount_o => wr_datacount_o,
-    rd_datacount_o => rd_datacount_o,
-    underflow_o => underflow_o,
-    overflow_o => overflow_o
-);
-
------------------------- End INSTANTIATION Template ---------

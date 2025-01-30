@@ -50,6 +50,7 @@ parameter RAH_PACKET_WIDTH = 48;
 parameter ACTIVE_VID_WIDTH = 1280;
 parameter ACTIVE_VID_HEIGHT = 1024;
 
+
 /* Rah Decoder definition for multiple Apps */
 assign my_mipi_rx_DPHY_RSTN = 1'b1;
 assign my_mipi_rx_RSTN = 1'b1;
@@ -101,21 +102,6 @@ rah_decoder #(
     .error                      (rd_error)
 );
 
-/* Periplex instantiation for multiplexing peripherals */
-assign rd_clk[`EXAMPLE] = rx_pixel_clk; 
-
-/* change this module as your app */
-example_recv #(
-    .RAH_PACKET_WIDTH(RAH_PACKET_WIDTH)
-) er (
-    .clk(rx_pixel_clk),
-    .data_queue_empty(data_queue_empty[`EXAMPLE]),
-    .data_queue_almost_empty(data_queue_almost_empty[`EXAMPLE]),
-    .request_data(request_data[`EXAMPLE]),
-    .data_frame(`GET_DATA_RAH(`EXAMPLE)),
-    .uart_tx_pin(uart_tx_pin)
-);
-
 /* Send data to processor */
 wire [`TOTAL_APPS-1:0] wr_clk;
 wire [(`TOTAL_APPS*RAH_PACKET_WIDTH)-1:0] wr_data;
@@ -137,11 +123,9 @@ rah_encoder #(
 ) re (
     .clk                    (tx_pixel_clk),
     .vid_gen_clk            (vid_gen_clk),
-
     .send_data              (write_apps_data),
     .wr_clk                 (wr_clk),
     .wr_data                (wr_data),
-
     .mipi_rst               (mipi_out_rst),
     .mipi_valid             (mipi_valid),
     .mipi_data              (mipi_out_data),
@@ -149,17 +133,44 @@ rah_encoder #(
     .vsync_patgen           (vsync)
 );
 
-assign wr_clk[`EXAMPLE] = tx_pixel_clk;
+/* SHA Bridge */
+wire [`TOTAL_APPS-1:0] write_apps_data;   
+wire [RAH_PACKET_WIDTH-1:0] wr_data;     
+wire w_rst, w_input_valid, w_output_valid;
+wire [511:0] w_block_header;
+wire [255:0] w_hash1_out, w_hash_result;
 
-/* Include your module */
-example_trans #(
-    .RAH_PACKET_WIDTH(RAH_PACKET_WIDTH)
-) et (
-    .clk            (tx_pixel_clk),
-    .uart_rx_pin    (uart_rx_pin),
-    .data           (`SET_DATA_RAH(`EXAMPLE)),
-    .send_data      (write_apps_data[`EXAMPLE])
+/* FIFO Clocks */
+assign wr_clk[`MINER] = rx_pixel_clk;
+assign rd_clk[`MINER] = rx_pixel_clk;
+
+/* RAH-SHA Bridge Module Instantiation */
+rah_sha_bridge bridge (
+    .clk                (rx_pixel_clk),                                 // Clock signal
+    .rst                (w_rst),                                          // Reset signal
+    .wr_fifo_empty      (data_queue_empty[`MINER]),                     // FIFO empty signal
+    .wr_fifo_a_empty    (data_queue_almost_empty[`MINER]),              // FIFO almost empty signal
+    .wr_fifo_read_data  (rd_data[`MINER * RAH_PACKET_WIDTH +: RAH_PACKET_WIDTH]), // FIFO read data
+    .wr_fifo_read_en    (request_data[`MINER]),                         // FIFO read enable
+    .input_valid        (w_input_valid),                                // Input valid signal for miner
+    .block_header       (w_block_header),                               // Block header for miner input
+    .hash1_out          (w_hash1_out),                                  // Intermediate hash output from miner
+    .output_valid       (w_output_valid),                               // Output valid signal from miner
+    .pp_rd_fifo_en      (write_apps_data[`MINER]),                      // Enable signal for post-processing FIFO
+    .pp_rd_fifo_data    (wr_data)                                       // Data written to post-processing FIFO
 );
+
+
+/* Miner Module Instantiation */
+miner miner_inst (
+    .clk            (rx_pixel_clk),                                    // Clock signal
+    .rst            (w_rst),                                             // Reset signal
+    .input_valid    (w_input_valid),                                   // Input valid signal from bridge
+    .block_header   (w_block_header),                                  // Block header data from bridge
+    .hash1_out      (w_hash1_out),                                     // Intermediate hash output
+    .output_valid   (w_output_valid)                                   // Output valid signal
+);
+
 
 assign my_mipi_tx_DPHY_RSTN = ~mipi_out_rst;
 assign my_mipi_tx_RSTN = ~mipi_out_rst;
