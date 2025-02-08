@@ -146,29 +146,31 @@ assign rd_clk[`MINER] = rx_pixel_clk;
 
 /* RAH-SHA Bridge Module Instantiation */
 rah_sha_bridge bridge (
-    .clk                (rx_pixel_clk),                                 // Clock signal
-    .rst                (w_rst),                                          // Reset signal
-    .wr_fifo_empty      (data_queue_empty[`MINER]),                     // FIFO empty signal
-    .wr_fifo_a_empty    (data_queue_almost_empty[`MINER]),              // FIFO almost empty signal
-    .wr_fifo_read_data  (rd_data[`MINER * RAH_PACKET_WIDTH +: RAH_PACKET_WIDTH]), // FIFO read data
-    .wr_fifo_read_en    (request_data[`MINER]),                         // FIFO read enable
-    .input_valid        (w_input_valid),                                // Input valid signal for miner
-    .block_header       (w_block_header),                               // Block header for miner input
-    .hash1_out          (w_hash1_out),                                  // Intermediate hash output from miner
-    .output_valid       (w_output_valid),                               // Output valid signal from miner
-    .pp_rd_fifo_en      (write_apps_data[`MINER]),                      // Enable signal for post-processing FIFO
-    .pp_rd_fifo_data    (wr_data)                                       // Data written to post-processing FIFO
+    .clk               (rx_pixel_clk),  // Clock signal
+    .rst               (w_rst),         // Reset signal
+    // FIFO Interface
+    .wr_fifo_empty     (data_queue_empty[`MINER]), 
+    .wr_fifo_read_data (rd_data[`MINER * RAH_PACKET_WIDTH +: RAH_PACKET_WIDTH]), 
+    .wr_fifo_read_en   (request_data[`MINER]), 
+    // SHA Input
+    .input_valid       (w_input_valid), 
+    .sha_input_data    (w_block_header), 
+    // SHA Output
+    .hash1_out         (w_hash1_out), 
+    .output_valid      (w_output_valid), 
+    // Post-Processing FIFO
+    .wrdata            (write_apps_data[`MINER]), 
+    .send_data         (wr_data)  
 );
-
 
 /* Miner Module Instantiation */
 miner miner_inst (
-    .clk            (rx_pixel_clk),                                    // Clock signal
-    .rst            (w_rst),                                             // Reset signal
-    .input_valid    (w_input_valid),                                   // Input valid signal from bridge
-    .block_header   (w_block_header),                                  // Block header data from bridge
-    .hash1_out      (w_hash1_out),                                     // Intermediate hash output
-    .output_valid   (w_output_valid)                                   // Output valid signal
+    .clk           (rx_pixel_clk),  // Clock signal
+    .rst           (w_rst),         // Reset signal
+    .input_valid   (w_input_valid), 
+    .block_header  (w_block_header), 
+    .hash1_out     (w_hash1_out), 
+    .output_valid  (w_output_valid) 
 );
 
 
