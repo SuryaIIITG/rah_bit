@@ -49,6 +49,7 @@ module top (
 parameter RAH_PACKET_WIDTH = 48;
 parameter ACTIVE_VID_WIDTH = 1280;
 parameter ACTIVE_VID_HEIGHT = 1024;
+parameter TOTAL_APPS = `TOTAL_APPS + 1;
 
 
 /* Rah Decoder definition for multiple Apps */
@@ -58,14 +59,14 @@ assign my_mipi_rx_CLEAR = 1'b0;
 assign my_mipi_rx_LANES = 2'b11;
 assign my_mipi_rx_VC_ENA = 4'b0001;
 
-wire [`TOTAL_APPS-1:0] rd_clk;
-wire [`TOTAL_APPS-1:0] request_data;
+wire [TOTAL_APPS-1:0] rd_clk;
+wire [TOTAL_APPS-1:0] request_data;
 
-wire [`TOTAL_APPS-1:0] data_queue_empty;
-wire [`TOTAL_APPS-1:0] data_queue_almost_empty;
-wire [`TOTAL_APPS-1:0] rd_error;
+wire [TOTAL_APPS-1:0] data_queue_empty;
+wire [TOTAL_APPS-1:0] data_queue_almost_empty;
+wire [TOTAL_APPS-1:0] rd_error;
 
-wire [(`TOTAL_APPS*RAH_PACKET_WIDTH)-1:0] rd_data;
+wire [(TOTAL_APPS*RAH_PACKET_WIDTH)-1:0] rd_data;
 
 wire [RAH_PACKET_WIDTH-1:0] aligned_data;
 wire end_of_packet;
@@ -78,12 +79,14 @@ data_aligner #(
 
     .mipi_data      (my_mipi_rx_DATA),
     .end_of_packet  (end_of_packet),
+    .rx_valid       (my_mipi_rx_VALID),
 
     .aligned_data   (aligned_data)
 );
 
 /* Depacketizing the recevied data */
 rah_decoder #(
+    .TOTAL_APPS(TOTAL_APPS),
     .DATA_WIDTH(RAH_PACKET_WIDTH)
 ) rd (
     /* rah raw input variables */
@@ -102,10 +105,47 @@ rah_decoder #(
     .error                      (rd_error)
 );
 
+<<<<<<< HEAD
+=======
+assign rd_clk[0] = rx_pixel_clk;
+assign wr_clk[0] = rx_pixel_clk;
+
+/* Rah Version verifier */
+rah_version_check #(
+    .RAH_PACKET_WIDTH(RAH_PACKET_WIDTH)
+) rvc (
+    .clk            (rx_pixel_clk),
+    .in_data        (`GET_DATA_RAH(0)),
+    .q_empty        (data_queue_empty[0]),
+
+    .request_data   (request_data[0]),
+    .w_en           (write_apps_data[0]),
+    .out_data       (`SET_DATA_RAH(0))
+);
+
+/* Periplex instantiation for multiplexing peripherals */
+assign rd_clk[`EXAMPLE] = rx_pixel_clk; 
+
+/* change this module as your app */
+example_recv #(
+    .RAH_PACKET_WIDTH(RAH_PACKET_WIDTH)
+) er (
+    .clk(rx_pixel_clk),
+    .data_queue_empty(data_queue_empty[`EXAMPLE]),
+    .data_queue_almost_empty(data_queue_almost_empty[`EXAMPLE]),
+    .request_data(request_data[`EXAMPLE]),
+    .data_frame(`GET_DATA_RAH(`EXAMPLE)),
+    .uart_tx_pin(uart_tx_pin)
+);
+
+>>>>>>> f4d3745c2b4750be38fd7d4b5e27d7a03ac7ae14
 /* Send data to processor */
-wire [`TOTAL_APPS-1:0] wr_clk;
-wire [(`TOTAL_APPS*RAH_PACKET_WIDTH)-1:0] wr_data;
-wire [`TOTAL_APPS-1:0] write_apps_data;
+wire [TOTAL_APPS-1:0] wr_clk;
+wire [(TOTAL_APPS*RAH_PACKET_WIDTH)-1:0] wr_data;
+wire [TOTAL_APPS-1:0] write_apps_data;
+wire [TOTAL_APPS-1:0] wr_fifo_full;
+wire [TOTAL_APPS-1:0] wr_almost_fifo_full;
+wire [TOTAL_APPS-1:0] wr_prog_fifo_full;
 
 wire vid_gen_clk;
 assign vid_gen_clk = tx_vga_clk;
@@ -117,6 +157,7 @@ wire hsync;
 wire vsync;
 
 rah_encoder #(
+    .TOTAL_APPS(TOTAL_APPS),
     .WIDTH(ACTIVE_VID_WIDTH),
     .HEIGHT(ACTIVE_VID_HEIGHT),
     .DATA_WIDTH(RAH_PACKET_WIDTH)
@@ -126,6 +167,14 @@ rah_encoder #(
     .send_data              (write_apps_data),
     .wr_clk                 (wr_clk),
     .wr_data                (wr_data),
+<<<<<<< HEAD
+=======
+
+    .wr_fifo_full           (wr_fifo_full),
+    .wr_almost_fifo_full    (wr_almost_fifo_full),
+    .wr_prog_fifo_full      (wr_prog_fifo_full),
+
+>>>>>>> f4d3745c2b4750be38fd7d4b5e27d7a03ac7ae14
     .mipi_rst               (mipi_out_rst),
     .mipi_valid             (mipi_valid),
     .mipi_data              (mipi_out_data),

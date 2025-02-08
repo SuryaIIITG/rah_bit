@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<<<<<<< HEAD
 <efx:project name="rah" description="" last_change="1738986434" sw_version="2024.2.294" last_run_state="fail" last_run_flow="place" config_result_in_sync="true" design_ood="sync" place_ood="" route_ood="" xmlns:efx="http://www.efinixinc.com/enf_proj" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.efinixinc.com/enf_proj enf_proj.xsd">
+=======
+<efx:project name="rah" description="" last_change="1738413708" sw_version="2023.2.307" last_run_state="pass" last_run_flow="bitstream" config_result_in_sync="true" design_ood="sync" place_ood="sync" route_ood="sync" xmlns:efx="http://www.efinixinc.com/enf_proj" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.efinixinc.com/enf_proj enf_proj.xsd">
+>>>>>>> f4d3745c2b4750be38fd7d4b5e27d7a03ac7ae14
     <efx:device_info>
         <efx:family name="Trion"/>
         <efx:device name="T120F324"/>
@@ -16,6 +20,7 @@
         <efx:design_file name="rtl/uart.v" version="default" library="default"/>
         <efx:design_file name="rtl/rrq.v" version="default" library="default"/>
         <efx:design_file name="rtl/data_aligner.v" version="default" library="default"/>
+<<<<<<< HEAD
         <efx:design_file name="sha_engine/rtl/Ch.v" version="default" library="default"/>
         <efx:design_file name="sha_engine/rtl/W_machine.v" version="default" library="default"/>
         <efx:design_file name="sha_engine/rtl/sha256_s1.v" version="default" library="default"/>
@@ -29,6 +34,9 @@
         <efx:design_file name="sha_engine/rtl/sha256_block.v" version="default" library="default"/>
         <efx:design_file name="sha_engine/rtl/sha256_K_machine.v" version="default" library="default"/>
         <efx:design_file name="rah_sha_bridge.v" version="default" library="default"/>
+=======
+        <efx:design_file name="rtl/rah_version_check.v" version="default" library="default"/>
+>>>>>>> f4d3745c2b4750be38fd7d4b5e27d7a03ac7ae14
         <efx:top_vhdl_arch name=""/>
     </efx:design_info>
     <efx:constraint_info>
@@ -41,6 +49,9 @@
     <efx:ip_info>
         <efx:ip instance_name="async_fifo" path="ip/async_fifo/settings.json">
             <efx:ip_src_file name="async_fifo.v"/>
+        </efx:ip>
+        <efx:ip instance_name="synchronous_fifo" path="ip/synchronous_fifo/settings.json">
+            <efx:ip_src_file name="synchronous_fifo.v"/>
         </efx:ip>
     </efx:ip_info>
     <efx:synthesis tool_name="efx_map">
@@ -73,12 +84,16 @@
         <efx:param name="mult_input_regs_packing" value="1" value_type="e_option"/>
         <efx:param name="mult_output_regs_packing" value="1" value_type="e_option"/>
         <efx:param name="include" value="ip/async_fifo" value_type="e_string"/>
+<<<<<<< HEAD
         <efx:param name="bram-push-tco-outreg" value="0" value_type="e_option"/>
         <efx:param name="hdl-loop-limit" value="20000" value_type="e_integer"/>
         <efx:param name="peri-syn-instantiation" value="0" value_type="e_option"/>
         <efx:param name="peri-syn-inference" value="0" value_type="e_option"/>
         <efx:param name="ram-decomp-mode" value="0" value_type="e_option"/>
         <efx:param name="max_threads" value="-1" value_type="e_integer"/>
+=======
+        <efx:param name="include" value="ip/synchronous_fifo" value_type="e_string"/>
+>>>>>>> f4d3745c2b4750be38fd7d4b5e27d7a03ac7ae14
     </efx:synthesis>
     <efx:place_and_route tool_name="efx_pnr">
         <efx:param name="work_dir" value="work_pnr" value_type="e_string"/>
